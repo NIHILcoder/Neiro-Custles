@@ -1,0 +1,26 @@
+{
+  "name": "neiro-castles",
+  "version": "0.1.0",
+  "description": "Neiro Castles – local-first cognitive platform",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "dist": "npm run build && electron-builder",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
+    "esbuild": "^0.24.0",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.0"
+  }
+}
