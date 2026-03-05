@@ -1,0 +1,363 @@
+/* src/renderer/styles/globals.css
+   ── Reset, background, keyframes, utilities ─────────────────────────── */
+@import './tokens.css';
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* Smooth theme switching */
+  transition: background-color 600ms ease, color 400ms ease;
+}
+
+a {
+  color: var(--accent-2);
+  text-decoration: none;
+  transition: color var(--t-fast), opacity var(--t-fast);
+}
+a:hover { text-decoration: underline; opacity: 0.9; }
+
+button { cursor: pointer; font-family: inherit; }
+input, textarea, select { font-family: inherit; }
+
+/* ── Premium scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Rose theme scrollbar */
+[data-theme="rose"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.10); }
+[data-theme="rose"] ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.18); }
+
+/* Focus ring — premium glow (theme-aware) */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgb(var(--accent-raw) / 0.15);
+}
+
+/* ── Typography helpers ──────────────────────────────────────────────────── */
+.text-sm    { font-size: 12px; }
+.text-base  { font-size: 14px; }
+.text-md    { font-size: 15px; }
+.text-lg    { font-size: 17px; }
+.text-xl    { font-size: 20px; }
+.text-2xl   { font-size: 24px; }
+
+.text-primary   { color: var(--text); }
+.text-secondary { color: var(--muted); }
+.text-muted     { color: var(--faint); }
+.text-accent    { color: var(--accent-2); }
+.text-success   { color: var(--success); }
+.text-warning   { color: var(--warning); }
+.text-danger    { color: var(--danger); }
+
+.font-medium { font-weight: 500; }
+.font-semi   { font-weight: 600; }
+.font-bold   { font-weight: 700; }
+
+/* Utility */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0,0,0,0);
+  overflow: hidden;
+}
+
+/* ── Global theme transition — smooth palette switching ──────────────────── */
+/* Applied only during theme switch via .theme-transitioning class */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+  transition: background-color 500ms ease,
+              border-color 500ms ease,
+              color 500ms ease,
+              box-shadow 500ms ease,
+              text-shadow 500ms ease !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM APP BACKGROUND — Theme-aware layered aurora
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Layer 1: base + slow-drifting aurora gradient */
+#root {
+  background-color: var(--bg-0);
+  transition: background-color 600ms ease;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgb(var(--aurora-1-raw) / 0.20) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgb(var(--aurora-2-raw) / 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 10% 80%, rgb(var(--aurora-3-raw) / 0.06) 0%, transparent 55%);
+  animation: auroraShift 25s ease-in-out infinite alternate;
+}
+
+@keyframes auroraShift {
+  0% {
+    background-image:
+      radial-gradient(ellipse 90% 55% at 50% -5%, rgb(var(--aurora-1-raw) / 0.20) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgb(var(--aurora-2-raw) / 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 35% at 10% 80%, rgb(var(--aurora-3-raw) / 0.06) 0%, transparent 55%);
+  }
+  50% {
+    background-image:
+      radial-gradient(ellipse 85% 50% at 55% -8%, rgb(var(--aurora-1-raw) / 0.16) 0%, transparent 60%),
+      radial-gradient(ellipse 65% 45% at 75% 115%, rgb(var(--aurora-2-raw) / 0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 40% at 15% 75%, rgb(var(--aurora-3-raw) / 0.08) 0%, transparent 50%);
+  }
+  100% {
+    background-image:
+      radial-gradient(ellipse 95% 60% at 45% -3%, rgb(var(--aurora-1-raw) / 0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 35% at 85% 105%, rgb(var(--aurora-2-raw) / 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 30% at 5% 85%, rgb(var(--aurora-3-raw) / 0.05) 0%, transparent 55%);
+  }
+}
+
+/* Layer 2: vignette (cinematic darkened edges) */
+#root::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+}
+
+/* Layer 3: film-grain noise — premium texture */
+#root::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 240px 240px;
+}
+
+/* Ensure shell sits above noise/vignette layers */
+.shell { position: relative; z-index: 1; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM ANIMATION KEYFRAMES — Shared across all components
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Page entrance — fade up with scale */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(12px) scale(0.995); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0) scale(1);        filter: blur(0);   }
+}
+
+/* Gentle float up — for cards, items */
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Slide in from left */
+@keyframes slideFromLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+/* Slide in from right */
+@keyframes slideFromRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+
+/* Scale in — for badges, status dots */
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1);   }
+}
+
+/* Glow pulse — theme-aware */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px rgb(var(--accent-raw) / 0.3); }
+  50%      { box-shadow: 0 0 24px rgb(var(--accent-raw) / 0.5); }
+}
+
+/* Gradient shimmer — for loading states / premium feel */
+@keyframes premiumShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Breathing glow — for active/focus elements */
+@keyframes breathe {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1;   }
+}
+
+/* Gentle bob — for floating elements */
+@keyframes gentleBob {
+  0%, 100% { transform: translateY(0);    }
+  50%      { transform: translateY(-3px); }
+}
+
+/* Logo entrance — bouncy scale */
+@keyframes logoEnter {
+  0%   { opacity: 0; transform: scale(0.5) rotate(-8deg); }
+  60%  { opacity: 1; transform: scale(1.08) rotate(1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg);    }
+}
+
+/* Ripple effect for buttons */
+@keyframes ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Spinning glow — real GPU-accelerated rotation for animated borders ── */
+@keyframes spinGlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Animated border spin — legacy (kept for compatibility) ──────────────── */
+@keyframes borderSpin {
+  to { --border-angle: 360deg; }
+}
+
+/* ── Glow reveal — for hover animated borders ────────────────────────────── */
+@keyframes glowReveal {
+  from { --glow-opacity: 0; }
+  to   { --glow-opacity: 1; }
+}
+
+/* ── GPU optimization hints ──────────────────────────────────────────────── */
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATED BORDER — Utility class for premium border glow
+   Apply .animated-border to any element with border-radius
+   ═══════════════════════════════════════════════════════════════════════════ */
+.animated-border {
+  position: relative;
+}
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 25%,
+    var(--accent) 40%,
+    var(--accent-2) 55%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderSpin 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hover-only animated border */
+.animated-border-hover {
+  position: relative;
+}
+.animated-border-hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 25%,
+    var(--accent) 40%,
+    var(--accent-2) 55%,
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderSpin 4s linear infinite;
+  opacity: 0;
+  transition: opacity 400ms var(--ease-out-expo);
+  pointer-events: none;
+  z-index: 1;
+}
+.animated-border-hover:hover::before {
+  opacity: 1;
+}
+
+/* Subtle always-on glow border (for active elements) */
+.glow-border {
+  position: relative;
+}
+.glow-border::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 20%,
+    var(--accent) 35%,
+    var(--accent-2) 50%,
+    transparent 65%
+  );
+  filter: blur(3px);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: borderSpin 6s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+/* ── Reduce motion preference ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  #root { animation: none !important; }
+}
