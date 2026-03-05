@@ -1,0 +1,115 @@
+/* src/renderer/components/ui/evidence.css
+   ── Premium Evidence — Animated quotes, glow effects ─────────────────── */
+
+.evidence-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+  animation: floatUp 300ms var(--ease-out-expo) both;
+}
+
+.evidence-quotes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.evidence-quote {
+  display: flex;
+  gap: var(--space-3);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition:
+    border-color 200ms var(--ease-out-expo),
+    transform 250ms var(--ease-spring),
+    box-shadow 300ms ease,
+    background 200ms ease;
+  animation: floatUp 400ms var(--ease-out-expo) both;
+}
+
+/* Staggered entrance for quotes */
+.evidence-quote:nth-child(1) { animation-delay: 100ms; }
+.evidence-quote:nth-child(2) { animation-delay: 180ms; }
+.evidence-quote:nth-child(3) { animation-delay: 260ms; }
+.evidence-quote:nth-child(4) { animation-delay: 340ms; }
+
+.evidence-quote:hover {
+  border-color: var(--border-strong);
+  transform: translateX(3px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.evidence-quote__bar {
+  width: 3px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  opacity: 0.7;
+  transition: opacity 200ms ease, box-shadow 300ms ease;
+  animation: barGlowPulse 3s ease-in-out infinite;
+}
+.evidence-quote:hover .evidence-quote__bar {
+  opacity: 1;
+  box-shadow: 0 0 8px rgb(var(--accent-raw) / 0.4);
+}
+
+@keyframes barGlowPulse {
+  0%, 100% { box-shadow: 0 0 4px rgb(var(--accent-raw) / 0.15); }
+  50%      { box-shadow: 0 0 10px rgb(var(--accent-raw) / 0.35); }
+}
+
+.evidence-quote__inner {
+  padding: var(--space-4);
+  flex: 1;
+}
+
+.evidence-quote__source {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: var(--space-2);
+}
+
+.evidence-quote__snippet {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* Why panel — glowing accent border */
+.evidence-why {
+  padding: var(--space-4) var(--space-5);
+  background: rgb(var(--accent-raw) / 0.07);
+  border: 1px solid rgb(var(--accent-raw) / 0.18);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 1px 0 rgb(var(--accent-raw) / 0.10), 0 0 20px rgb(var(--accent-raw) / 0.06);
+  animation: floatUp 400ms var(--ease-out-expo) both;
+  animation-delay: 350ms;
+  transition: box-shadow 300ms ease, border-color 200ms ease;
+}
+.evidence-why:hover {
+  box-shadow: inset 0 1px 0 rgb(var(--accent-raw) / 0.10), 0 0 30px rgb(var(--accent-raw) / 0.12);
+  border-color: rgb(var(--accent-raw) / 0.28);
+}
+
+.evidence-why__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  margin-bottom: var(--space-3);
+}
+
+.evidence-why__text {
+  font-size: 13.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
