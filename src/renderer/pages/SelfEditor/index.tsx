@@ -6,6 +6,7 @@ import { Badge }  from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Card }   from '../../components/ui/Card';
 import { Input }  from '../../components/ui/Input';
+import { Drawer } from '../../components/ui/Drawer';
 import { EvidenceDrawer } from '../../components/ui/EvidenceDrawer';
 
 /* ── Category constants ─────────────────────────────────────────────────── */
@@ -59,8 +60,14 @@ const SourceIcon = (
 /* ── Component ──────────────────────────────────────────────────────────── */
 
 export function SelfEditor() {
-  const [beliefs, setBeliefs]           = useState<Belief[]>([]);
-  const [selected, setSelected]         = useState<Belief | null>(null);
+  const [beliefs, setBeliefs]             = useState<Belief[]>([]);
+  const [selected, setSelected]           = useState<Belief | null>(null);
+  const [draft, setDraft]                 = useState('');
+  const [saving, setSaving]               = useState(false);
+  const [editing, setEditing]             = useState(false);
+  const [importance, setImportance]       = useState(70);
+  const [useInPersona, setUseInPersona]   = useState(true);
+  const [evidenceOpen, setEvidenceOpen]   = useState(false);
 
   // Filters
   const [activeCategories, setActiveCategories] = useState<Set<BeliefCategory>>(new Set());
@@ -117,6 +124,32 @@ export function SelfEditor() {
 
   function openDetail(b: Belief) {
     setSelected(b);
+    setDraft(b.statement);
+    setImportance(Math.round(b.confidence * 100));
+    setUseInPersona(b.inPersona);
+    setEditing(false);
+  }
+
+  function closeDetail() {
+    setSelected(null);
+    setEditing(false);
+  }
+
+  async function handleSave() {
+    if (!selected || saving) return;
+    setSaving(true);
+    try {
+      const updated = await window.neiro.self.updateBelief(selected.id, {
+        statement: draft,
+        confidence: importance / 100,
+        inPersona: useInPersona,
+      });
+      setBeliefs(prev => prev.map(b => b.id === updated.id ? updated : b));
+      setSelected(updated);
+      setEditing(false);
+    } finally {
+      setSaving(false);
+    }
   }
 
   /* ── Render ────────────────────────────────────────── */
@@ -268,9 +301,128 @@ export function SelfEditor() {
         </section>
       </div>
 
+      {/* ── Detail Drawer ────────────────────────────────── */}
+      <Drawer
+        open={!!selected}
+        onClose={closeDetail}
+        title="Belief Details"
+        side="right"
+        width={480}
+      >
+        {selected && (
+          <div className="belief-detail">
+            {/* Header row */}
+            <div className="belief-detail__header">
+              <Badge color="outline">
+                {CATEGORY_ICONS[selected.category]}
+                {CATEGORY_LABELS[selected.category]}
+              </Badge>
+              <Badge color={STATUS_COLOR[selected.status]}>
+                {selected.status === 'confirmed' ? 'Confirmed' : 'Hypothesis'}
+              </Badge>
+            </div>
+
+            {/* Statement */}
+            <div className="belief-detail__section">
+              <label className="section-label">STATEMENT</label>
+              {editing ? (
+                <textarea
+                  className="belief-detail__textarea"
+                  value={draft}
+                  onChange={e => setDraft(e.target.value)}
+                  autoFocus
+                />
+              ) : (
+                <div className="belief-detail__statement">{selected.statement}</div>
+              )}
+            </div>
+
+            {/* Confidence */}
+            <div className="belief-detail__section">
+              <div className="belief-detail__section-row">
+                <label className="section-label" style={{ marginBottom: 0 }}>CONFIDENCE</label>
+                <span className="belief-detail__value">{importance}%</span>
+              </div>
+              <div className="importance-slider-wrap">
+                <input
+                  type="range"
+                  className="importance-slider"
+                  min={0} max={100}
+                  value={importance}
+                  onChange={e => setImportance(Number(e.target.value))}
+                />
+                <div className="importance-slider__fill" style={{ width: `${importance}%` }} />
+              </div>
+            </div>
+
+            {/* Evidence */}
+            <div className="belief-detail__section">
+              <label className="section-label">EVIDENCE</label>
+              {selected.evidence.map((q, i) => (
+                <div key={i} className="evidence-quote">
+                  <div className="evidence-quote__bar" />
+                  <div className="evidence-quote__inner">
+                    <div className="evidence-quote__source">{q.source} · {q.date}</div>
+                    <div className="evidence-quote__snippet">"{q.snippet}"</div>
+                  </div>
+                </div>
+              ))}
+              {selected.evidence.length > 0 && (
+                <Button variant="ghost" size="sm" onClick={() => setEvidenceOpen(true)}>
+                  View all sources ({selected.sourceCount})
+                </Button>
+              )}
+            </div>
+
+            {/* Timeline */}
+            <div className="belief-detail__section">
+              <label className="section-label">TIMELINE</label>
+              <div className="belief-detail__timeline">
+                <span>Created: {selected.createdAt}</span>
+                <span>Updated: {selected.updatedAt}</span>
+              </div>
+            </div>
+
+            {/* Persona toggle */}
+            <div className="self-toggle-row">
+              <span className="self-toggle-label">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                  <path d="M12 3c0 1.657-2 3-2 3S8 4.657 8 3a2 2 0 014 0zM4 17c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+                Use in Persona
+              </span>
+              <button
+                className={`toggle-switch ${useInPersona ? 'toggle-switch--on' : ''}`}
+                onClick={() => setUseInPersona(v => !v)}
+                role="switch"
+                aria-checked={useInPersona}
+              >
+                <span className="toggle-switch__thumb" />
+              </button>
+            </div>
+
+            {/* Actions */}
+            <div className="belief-detail__actions">
+              <Button variant="primary" size="md" onClick={handleSave} loading={saving} className="belief-detail__confirm-btn">
+                {selected.status === 'hypothesis' ? 'Confirm Belief' : 'Save Changes'}
+              </Button>
+              <div className="belief-detail__actions-row">
+                <Button variant="secondary" size="sm" onClick={() => setEditing(!editing)}>
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 14l3-1L13.5 4.5a1.41 1.41 0 00-2-2L3 11l-1 3z" stroke="currentColor" strokeWidth="1.3"/></svg>
+                  {editing ? 'Cancel' : 'Edit'}
+                </Button>
+                <Button variant="danger" size="sm">
+                  Reject
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Drawer>
+
       <EvidenceDrawer
-        open={false}
-        onClose={() => {}}
+        open={evidenceOpen}
+        onClose={() => setEvidenceOpen(false)}
         quotes={selected?.evidence}
         why={selected ? `Evidence underpinning: "${selected.statement}"` : undefined}
       />
